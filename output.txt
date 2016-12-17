@@ -1,0 +1,7 @@
+Reading file: /media/kasia/20E03D5DE03D3A7C/studia/proz/DBEngine/CA_A.mgf
+Reading queries...
+46887 queries.
+[(700.24585..700.4462)](700.24585..700.4462)
+klucz (700.24585..700.4462) [Q1: 351.1802 (+2), Q2: 351.18021 (+2), Q3: 351.18029 (+2), Q4: 351.18038 (+2)]
+Reading FASTA file: /media/kasia/20E03D5DE03D3A7C/studia/proz/DBEngine/uniprot_sprot_Homo_sapiens.fasta...
+ (20186 records)
