@@ -16,8 +16,8 @@ public class MainClass
 
 
     public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
-        //PrintStream out = new PrintStream(new FileOutputStream("output.txt"));
-        //System.setOut(out);
+        PrintStream out = new PrintStream(new FileOutputStream("output.txt"));
+        System.setOut(out);
         checkArgs(args);
         //----czytanie widm, tworzenie drzewo zakresu i mapy zakres-widma----
         MgfRead mgfReader = new MgfRead(args[1]);
@@ -30,11 +30,12 @@ public class MainClass
         HashMap<MsMsQuery, List<Peptide>> msMsQueryListHashMap = peptideHashMapCreator.getMsMsQueryListHashMap();
         ScoringClass scoringClass = new ScoringClass(msMsQueryListHashMap);
         scoringClass.doScoring();
-       /* for (MsMsQuery name: msMsQueryListHashMap.keySet()){
+        System.out.println("----------------------");
+        /*for (MsMsQuery name: msMsQueryListHashMap.keySet()){
 
             String key =name.toString();
             String value = msMsQueryListHashMap.get(name).toString();
-            System.out.println("klucz "+key + " " + value);
+            System.out.println("klucz "+key +" "+msMsQueryListHashMap.get(name).size()+ " " + value);
 
 
         }*/

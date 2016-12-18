@@ -21,8 +21,8 @@ public class PeptideHashMapCreator {
 
         msMsQueryListHashMap = new HashMap<>();
         // dla każdego białka
-        for (int i = 0; i<20; i++){
-            FastaRecord fastaRecord= fastaRecords.get(i);
+        for (FastaRecord fastaRecord :fastaRecords){
+
 
             //System.out.println(fastaRecord.getSequence());
             // dzieli białko, porównuje z zakresami i
