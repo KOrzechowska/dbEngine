@@ -79,7 +79,7 @@ public class ScoringClass
         for (int j=0; j<queries.length; j++){
             MsMsQuery query = queries[j];
             //System.out.println(query.getNr()+"  "+i); i++;
-            List<Peptide> candidatePeptideList = peptideCreator.getCandidatePeptideFromDBList((float) query.getMass(), (float)0.1);
+            List<Peptide> candidatePeptideList = peptideCreator.getCandidatePeptideFromDBList((float) query.getMass(), 5);
             //System.out.println(""+candidatePeptideList.size());
             if(candidatePeptideList.size()==0) continue;
             SpectrumScoreFromDB spectrumScorer = new SpectrumScoreFromDB(candidatePeptideList, query);

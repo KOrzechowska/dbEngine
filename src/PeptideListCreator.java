@@ -63,18 +63,35 @@ public class PeptideListCreator
     
 
     
-    public List<Peptide> getCandidatePeptideFromDBList(Float masFromExperiment, Float tolerance){
+    public List<Peptide> getCandidatePeptideFromDBList(Float masFromExperiment, double tolerance){
         List<Peptide> candidatePeptideFromDBList = new ArrayList<>();
-        Float minMass = masFromExperiment - tolerance*masFromExperiment;
-        Float maxMass = masFromExperiment + tolerance;
+        //tolerancja liczona jako =/- delta mas
+        double minMass = masFromExperiment - tolerance*masFromExperiment/1000000;
+        double maxMass = masFromExperiment + tolerance*masFromExperiment/1000000;
        
         // wersja z wiadomo�ci� z jakiego to bia�ka
         for (Peptide sequence : sequencesFromProteinList){
-
-            Float mass = (float) sequence.getSequence().getMonoMass();
+            /*Float mass = (float) sequence.getSequence().getMonoMass();
             if(mass >maxMass) break;
             Float sigmaMass = (masFromExperiment - mass)/mass;
             if(sigmaMass <= 5){
+                candidatePeptideFromDBList.add(sequence);
+            }*/
+        	double mass = sequence.getSequence().getMonoMass();
+
+        	/*double deltaMassSpectrum = masFromExperiment-mass;
+            double sigmaMassSpectrum = (deltaMassSpectrum/masFromExperiment)*1000000;            
+			//tolerancja liczona jako +/- od sigmy masy
+            double sigmaMassMin = sigmaMassSpectrum - tolerance;
+            double sigmaMassMax = sigmaMassSpectrum + tolerance; 
+
+            double deltaMassPeptide = mass-masFromExperiment;
+            double sigmaMassPeptide = (deltaMassPeptide/mass)*1000000;          
+                        
+           if(sigmaMassPeptide>sigmaMassMin && sigmaMassPeptide<sigmaMassMax){
+                candidatePeptideFromDBList.add(sequence);
+            }*/
+        	if(mass>minMass && mass<maxMass){
                 candidatePeptideFromDBList.add(sequence);
             }
 

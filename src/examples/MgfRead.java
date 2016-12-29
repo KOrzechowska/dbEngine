@@ -59,8 +59,9 @@ public class MgfRead
 				{
 					if (queries[i]!=null)
 					{
-						float min = (float) (queries[i].getMass()-0.1);
-						float max = (float) (queries[i].getMass()+0.1);
+						//tolerancja =/-detaMas
+						float min = (float) (queries[i].getMass()-5*queries[i].getMass()/1000000);
+						float max = (float) (queries[i].getMass()+5*queries[i].getMass()/1000000);
 						rangeSet.add(Range.open(min,max));
 
 						/*
