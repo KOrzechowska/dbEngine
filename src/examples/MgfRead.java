@@ -55,7 +55,7 @@ public class MgfRead
 				 * Wypisanie informacji z pliku MGF
 				 * tworzenie drzewa zakresów
 				 */
-				for (int i=0;i<50;i++)
+				for (int i=0;i<queries.length;i++)
 				{
 					if (queries[i]!=null)
 					{
@@ -86,7 +86,7 @@ public class MgfRead
 				System.out.println(rangeSet.toString()+ rangeSet.rangeContaining((float)queries[3].getMass()));
 				rangeMsMsQueryHashMap = new HashMap<>();
 				// przypisanie widm do zakresów
-				for (int i=0;i<50;i++) {
+				for (int i=0;i<queries.length;i++) {
 					if (queries[i] != null) {
 						// jeszcze zakres nie ma widma
 						if(!rangeMsMsQueryHashMap.containsKey(rangeSet.rangeContaining((float)queries[i].getMass())))

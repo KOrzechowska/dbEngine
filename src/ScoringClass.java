@@ -60,7 +60,7 @@ public class ScoringClass
             double maxValueInMap=(Collections.max(scorePeptideHaspMap.values()));  // This will return max value in the Hashmap
             for (Entry<Peptide, Double> entry : scorePeptideHaspMap.entrySet()) {  // Itrate through hashmap
                 if (entry.getValue()==maxValueInMap) {
-                    System.out.println("kandydatÃ³w: " + peptideList.size()+";" +" dla: "+";" + query.toString()+";"+query.getMass()+
+                    System.out.println("kandydatów: " + peptideList.size()+";" +" dla: "+";" + query.toString()+";"+query.getMass()+
                             ";"+entry.getKey().getSequence() +";" +entry.getKey().getProteinIds() +";"+
                             entry.getValue() +";"+entry.getKey().getMass());     // Print the key with max value
                 }

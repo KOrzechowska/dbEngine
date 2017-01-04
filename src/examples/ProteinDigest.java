@@ -92,7 +92,7 @@ public class ProteinDigest
 					if (msMsQueryList != null) { // jeśli zakres ma widma
 						for (MsMsQuery msMsQuery : msMsQueryList) {
 							// -- jeśli peptyd jest w tolerancji widma to jest kandyadtem
-							if (abs(msMsQuery.getMass() - sequence.getMonoMass()) < 0.1) {
+							if (abs(msMsQuery.getMass() - sequence.getMonoMass()) < 5*msMsQuery.getMass()/1000000) {
 								//System.out.println("trafione");
 								// czy widmo ma już kandydatów
 								if (!msMsQueryListHashMap.containsKey(msMsQuery)) { // nie ma

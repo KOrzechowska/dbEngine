@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Vector;
 
 import com.google.common.collect.Range;
+
 import examples.MgfRead;
 import examples.Peptide;
 import mscanlib.ms.db.FastaRecord;
@@ -16,6 +17,7 @@ public class MainClass
 
 
     public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
+    	long start = System.currentTimeMillis();
         PrintStream out = new PrintStream(new FileOutputStream("output.txt"));
         System.setOut(out);
         checkArgs(args);
@@ -30,6 +32,8 @@ public class MainClass
         HashMap<MsMsQuery, List<Peptide>> msMsQueryListHashMap = peptideHashMapCreator.getMsMsQueryListHashMap();
         ScoringClass scoringClass = new ScoringClass(msMsQueryListHashMap);
         scoringClass.doScoring();
+        long stop=System.currentTimeMillis();        
+        System.out.println("Czas wykonania:"+(stop-start));
         System.out.println("----------------------");
         /*for (MsMsQuery name: msMsQueryListHashMap.keySet()){
 
