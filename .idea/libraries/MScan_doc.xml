@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="MScan-doc">
+    <CLASSES />
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/libsdoc/MScan-doc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/libsdoc/MScan-src.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -53,19 +53,7 @@ public class FastaRead
 			fastaRecords=fastaReader.readRecords();
 			
 			System.out.println(" (" + fastaRecords.size() + " records)");
-			
-			/*
-			 * wypisanie sekwencji
-			 */
-			for (FastaRecord fastaRecord: fastaRecords)
-			{
-				/*System.out.println("\nDescritpion: " + fastaRecord.getDescription());	//opis rekordu FASTA
-				System.out.println("ID: " + fastaRecord.getId());						//identyfikator bialka
-				System.out.println("Name: " + fastaRecord.getName());					//nazwa bialka
-				System.out.println("Organism: " + fastaRecord.getOrganism());			//organizm
-				System.out.println("Sequence: " + fastaRecord.getSequence());			//sekwencja bialka
-			*/
-			}
+
 		}else{
 		    throw new Exception("Z�a �cie�ka dla fasta file");
 		}

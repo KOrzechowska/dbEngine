@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.google.common.collect.Range;
-import com.google.common.collect.RangeSet;
 import com.google.common.collect.TreeRangeSet;
 import mscanlib.*;
 import mscanlib.ms.mass.*;
@@ -26,7 +25,9 @@ import mscanlib.ms.msms.spectrum.*;
 public class MgfRead
 {
     MsMsQuery  queries[]=null;     //tablica zapytan do systemu identyfikacji (widm MS/MS wraz z dodatkowymi informacjami)
-	RangeSet<Float> rangeSet = TreeRangeSet.create();
+	/**drzewo zakresów*/
+	TreeRangeSet treeRangeSet = TreeRangeSet.create();
+	/** mapa zakres - lista widm */
 	HashMap<Range,List<MsMsQuery>> rangeMsMsQueryHashMap;
 	/**
 	 * Konstruktor
@@ -48,6 +49,9 @@ public class MgfRead
 			File fastFile = new File(filename);
             if(!fastFile.isDirectory() && fastFile.toString().endsWith(".mgf")){
 			System.out.println("Reading file: " + filename);
+
+				rangeMsMsQueryHashMap = new HashMap<>();
+
 			if ((queries=this.readQueries(filename))!=null)
 			{
 				
@@ -62,54 +66,28 @@ public class MgfRead
 						//tolerancja =/-detaMas
 						float min = (float) (queries[i].getMass()-5*queries[i].getMass()/1000000);
 						float max = (float) (queries[i].getMass()+5*queries[i].getMass()/1000000);
-						rangeSet.add(Range.open(min,max));
+						treeRangeSet.add(Range.open(min,max));
 
-						/*
-						 * wypisanie informacji o jonie prekursorowym 
-						 */
-						/*System.out.println("\nQuery: " + queries[i].getNr());
-						System.out.println("Precursor ion experimental mass: " + queries[i].getMass());
-						System.out.println("Precursor ion charge state: " + queries[i].getCharge());				
-						System.out.println("Precursor ion experimental m/z: " + queries[i].getMz());
-						System.out.println("Precursor ion RT: " + queries[i].getRt());	
-						System.out.println("Precursor ion peak intensity: " + queries[i].getPrecursorIntensity());
-					*/
 						/*
 						 * wypisanie informacji o widmie MS/MS 
 						 */
 						MsMsSpectrum spectrum=queries[i].getSpectrum();
-						//if (spectrum!=null)
-						//	System.out.println(spectrum);
-					}
 
-				}
-				System.out.println(rangeSet.toString()+ rangeSet.rangeContaining((float)queries[3].getMass()));
-				rangeMsMsQueryHashMap = new HashMap<>();
-				// przypisanie widm do zakresów
-				for (int i=0;i<queries.length;i++) {
-					if (queries[i] != null) {
 						// jeszcze zakres nie ma widma
-						if(!rangeMsMsQueryHashMap.containsKey(rangeSet.rangeContaining((float)queries[i].getMass())))
+						if(!rangeMsMsQueryHashMap.containsKey(treeRangeSet.rangeContaining((float)queries[i].getMass())))
 						{
 							List<MsMsQuery> msMsQueryList = new ArrayList<>();
 							msMsQueryList.add(queries[i]);
-							rangeMsMsQueryHashMap.put(rangeSet.rangeContaining((float)queries[i].getMass()),msMsQueryList);
+							rangeMsMsQueryHashMap.put(treeRangeSet.rangeContaining((float)queries[i].getMass()),msMsQueryList);
 						}// jeśli już jest taki klucz, to dodajemy mu kolejne widmo
 						else{
-							rangeMsMsQueryHashMap.get(rangeSet.rangeContaining((float)queries[i].getMass())).add(queries[i]);
+							rangeMsMsQueryHashMap.get(treeRangeSet.rangeContaining((float)queries[i].getMass())).add(queries[i]);
 						}
-						//rangeMsMsQueryHashMap.put(rangeSet.rangeContaining((float)queries[i].getMass()),queries[i]);
 					}
-				}
-
-				for (Range name: rangeMsMsQueryHashMap.keySet()){
-
-					String key =name.toString();
-					String value = rangeMsMsQueryHashMap.get(name).toString();
-					System.out.println("klucz "+key + " " + value);
-
 
 				}
+				System.out.println(treeRangeSet.toString()+ treeRangeSet.rangeContaining((float)queries[3].getMass()));
+
 
 			}
 		}else {
@@ -133,6 +111,10 @@ public class MgfRead
 
 	public HashMap<Range, List<MsMsQuery>> getRangeMsMsQueryHashMap() {
 		return rangeMsMsQueryHashMap;
+	}
+
+	public TreeRangeSet getTreeRangeSet() {
+		return treeRangeSet;
 	}
 
 	/**

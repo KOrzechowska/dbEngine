@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="libs">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/combinatoricslib-2.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/combination.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/MScan.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

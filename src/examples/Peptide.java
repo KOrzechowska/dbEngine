@@ -7,8 +7,12 @@ import java.util.List;
 
 public class Peptide
 {
+    /*** sekwencja  */
     private AminoAcidSequence sequence;
+    /** lista id białek*/
     private List<String> proteinIds;
+    /** wynik dopasowania peptydu z widmem*/
+    private Double score;
     
     public Peptide(AminoAcidSequence sequence, String proteinId)
     {
@@ -54,6 +58,14 @@ public class Peptide
 
     public List<String> getProteinIds() {
         return proteinIds;
+    }
+
+    public Double getScore() {
+        return score;
+    }
+
+    public void setScore(Double score) {
+        this.score = score;
     }
 
     @Override
