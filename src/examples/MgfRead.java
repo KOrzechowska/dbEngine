@@ -86,7 +86,7 @@ public class MgfRead
 					}
 
 				}
-				System.out.println(treeRangeSet.toString()+ treeRangeSet.rangeContaining((float)queries[3].getMass()));
+				System.out.println(treeRangeSet.rangeContaining((float)queries[3].getMass()));
 
 
 			}

@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Vector;
 
@@ -34,9 +35,10 @@ public class MainClass
         Vector<FastaRecord> fastaRecords = fastareader.getFastaRecords();
         //---- trawienie bazy danych
         PeptideHashMapCreator peptideHashMapCreator = new PeptideHashMapCreator(fastaRecords, rangeMsMsQueryHashMap, treeRangeSet);
-        HashMap<MsMsQuery, List<Peptide>> msMsQueryListHashMap = peptideHashMapCreator.getMsMsQueryListHashMap();
+        HashMap<MsMsQuery, HashSet<Peptide>> msMsQueryListHashMap = peptideHashMapCreator.getMsMsQueryListHashMap();
         ChooseMaxScored chooseMaxScored = new ChooseMaxScored(msMsQueryListHashMap);
         start = System.currentTimeMillis();
+        chooseMaxScored.score();
         chooseMaxScored.getMaxScoredPeptide();
         stop = System.currentTimeMillis();
         long stopG = System.currentTimeMillis();

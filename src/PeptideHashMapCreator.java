@@ -16,7 +16,7 @@ import java.util.Vector;
  */
 public class PeptideHashMapCreator {
 
-    private HashMap<MsMsQuery, List<Peptide>> msMsQueryListHashMap;
+    private HashMap<MsMsQuery, HashSet<Peptide>> msMsQueryListHashMap;
 
     public PeptideHashMapCreator(Vector<FastaRecord> fastaRecords, HashMap<Range, List<MsMsQuery>> rangeListHashMap, TreeRangeSet treeRangeSet){
 
@@ -33,7 +33,7 @@ public class PeptideHashMapCreator {
         System.out.println("Czas wykoania ciachania białek: "+ (stop-start));
     }
 
-    public HashMap<MsMsQuery, List<Peptide>> getMsMsQueryListHashMap() {
+    public HashMap<MsMsQuery, HashSet<Peptide>> getMsMsQueryListHashMap() {
         return msMsQueryListHashMap;
     }
 }

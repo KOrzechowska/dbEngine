@@ -22,6 +22,9 @@ public class ScoringClass
     /** mapa peptyd wynik*/
     HashMap<Peptide, Double> scoresMap;
     double score;
+    private MsMsQuery query;
+    private Peptide peptide;
+    private DbEngineScoringConfig config;
 
     /**
      *
@@ -108,7 +111,8 @@ public class ScoringClass
         return scoresMap;
     }
     
-    public ScoringClass(MsMsQuery query, Peptide peptide){
+    public ScoringClass(){
+
         /*
          * Inicjalizacja map aminokwasow i modyfikacji
          */
@@ -124,7 +128,7 @@ public class ScoringClass
         /*
          * Konfiguracja scoringu
          */
-        DbEngineScoringConfig config=new DbEngineScoringConfig();
+        config=new DbEngineScoringConfig();
         config.setFragmentMMD(0.02);                                                            //tolerancja m/z pikow fragmentacyjnych
         config.setFragmentMMDUnit(MassTools.MMD_UNIT_DA);
 
@@ -138,12 +142,16 @@ public class ScoringClass
         config.getFragmentationConfig().addCharge(1);                                           //uwzglednienie jonow fragmentacyjnych o stopniu naladowania +1 i +2
         config.getFragmentationConfig().addCharge(2);
 
-        MsMsSpectrum procSpectrum=MScanDbScoring.processSpectrum(query.getSpectrum(), config.getProcessingConfig());
-         score=MScanDbScoring.computeScore(procSpectrum,peptide.getSequence(),query.getCharge(),config);
+        //MsMsSpectrum procSpectrum=MScanDbScoring.processSpectrum(query.getSpectrum(), config.getProcessingConfig());
+        // score=MScanDbScoring.computeScore(procSpectrum,peptide.getSequence(),query.getCharge(),config);
 
     }
 
-    public double getScore() {
+    public double getScore(MsMsQuery query, Peptide peptide) {
+        this.query = query;
+        this.peptide = peptide;
+        MsMsSpectrum procSpectrum=MScanDbScoring.processSpectrum(query.getSpectrum(), config.getProcessingConfig());
+        score=MScanDbScoring.computeScore(procSpectrum,peptide.getSequence(),query.getCharge(),config);
         return score;
     }
 

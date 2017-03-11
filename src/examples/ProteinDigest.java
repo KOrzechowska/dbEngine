@@ -1,6 +1,5 @@
 package examples;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -8,6 +7,7 @@ import java.util.List;
 import com.google.common.collect.Range;
 import com.google.common.collect.TreeRangeSet;
 import mscanlib.MScanException;
+import mscanlib.ms.align.Sequence;
 import mscanlib.ms.db.FastaRecord;
 import mscanlib.ms.mass.AminoAcidSequence;
 import mscanlib.ms.mass.EnzymeMap;
@@ -26,6 +26,7 @@ import static java.lang.Math.abs;
 public class ProteinDigest
 {
     private HashSet<AminoAcidSequence> sequencesSet;
+	private double DELTA_VAALUE = (double)5/1000000;
 
 
     /**
@@ -36,7 +37,7 @@ public class ProteinDigest
 	 * @param treeRangeSet
 	 */
 	public ProteinDigest(FastaRecord fastaRecord, HashMap<Range, List<MsMsQuery>> rangeListHashMap,
-						 HashMap<MsMsQuery, List<Peptide>> msMsQueryListHashMap, TreeRangeSet treeRangeSet)
+						 HashMap<MsMsQuery, HashSet<Peptide>> msMsQueryListHashMap, TreeRangeSet treeRangeSet)
 	{
 
 		/*
@@ -78,42 +79,79 @@ public class ProteinDigest
 					List<MsMsQuery> msMsQueryList = rangeListHashMap.get(range);
 					if (msMsQueryList != null) { // jeśli zakres ma widma
 						for (MsMsQuery msMsQuery : msMsQueryList) {
-							// -- jeśli peptyd jest w tolerancji widma to jest kandyadtem
-							if (abs(msMsQuery.getMass() - sequence.getMonoMass()) < 5*msMsQuery.getMass()/1000000) {
-
-								// czy widmo ma już kandydatów
-								if (!msMsQueryListHashMap.containsKey(msMsQuery)) { // nie ma
-									// tworzymy peptyd - sekwencję i białko do którego nalezy
-									Peptide peptide = new Peptide(sequence, fastaRecord.getId());
-									// wyliczamy score dla peptyd - widmo
-									ScoringClass scoringClass = new ScoringClass(msMsQuery,peptide);
-									peptide.setScore(scoringClass.getScore());
-									List<Peptide> peptideList = new ArrayList<>();
-									// tworzymy listę kandydatów bo te widmo jeszcze nie ma
-									peptideList.add(peptide);
-									// dodajemy do ogólnej listy
-									msMsQueryListHashMap.put(msMsQuery, peptideList);
-								} else { // ma
-									// tworzymy peptyd - sekwencję i białko do którego nalezy
-									Peptide peptide = new Peptide(sequence, fastaRecord.getId());
-									// możemy mieć już taki peptyd czyli znamy dla niego score
-									if (doWeKnowThatPeptideScore(msMsQueryListHashMap.get(msMsQuery), peptide.getSequence()))
-										addPeptideId(msMsQueryListHashMap.get(msMsQuery), peptide);
-									else { // nie było takie peptydu - liczymy mu score
-										// wyliczamy score dla peptyd - widmo
-										ScoringClass scoringClass = new ScoringClass(msMsQuery, peptide);
-										peptide.setScore(scoringClass.getScore());
-										msMsQueryListHashMap.get(msMsQuery).add(peptide);
-									}
-								}
-							}
+							addPeptideCandidate(msMsQuery, sequence, fastaRecord, msMsQueryListHashMap);
 						}
 					}
 				}
 			}
-
-    		
     	}
+	}
+
+	/**
+	 * dodanie peptydu do listy kandydatów jesli miesci sie w zakresie
+	 * @param msMsQuery widmo rozpatrywane
+	 * @param sequence peptyd
+	 * @param fastaRecord białko
+	 * @param msMsQueryListHashMap mapa widmo - kandydaci do którego sa dopisywani
+     */
+	public void addPeptideCandidate(MsMsQuery msMsQuery, AminoAcidSequence sequence, FastaRecord fastaRecord,
+									HashMap<MsMsQuery, HashSet<Peptide>> msMsQueryListHashMap){
+		// -- jeśli peptyd jest w tolerancji widma to jest kandyadtem
+		if (abs(msMsQuery.getMass() - sequence.getMonoMass()) < msMsQuery.getMass()*DELTA_VAALUE) {
+
+			// czy widmo ma już kandydatów
+			if (!msMsQueryListHashMap.containsKey(msMsQuery)) { // nie ma
+				createPeptideCandidateList(msMsQuery, sequence, fastaRecord, msMsQueryListHashMap);
+			} else { // ma
+				addPeptideCandidateToList(msMsQuery, sequence, fastaRecord, msMsQueryListHashMap);
+			}
+		}
+	}
+
+	/**
+	 * tworzenie dla widma listy peptydów kandydackich
+	 * tworzymy peptyd i dodajemy go do utworzonej listy
+	 * @param msMsQuery widmo
+	 * @param sequence peptyd
+	 * @param fastaRecord białko
+	 * @param msMsQueryListHashMap mapa widmo - kandydaci do którego odpisywani są
+     */
+	public void createPeptideCandidateList(MsMsQuery msMsQuery, AminoAcidSequence sequence, FastaRecord fastaRecord,
+										   HashMap<MsMsQuery, HashSet<Peptide>> msMsQueryListHashMap){
+		// tworzymy peptyd - sekwencję i białko do którego nalezy
+		Peptide peptide = new Peptide(sequence, fastaRecord.getId());
+		// wyliczamy score dla peptyd - widmo
+		//ScoringClass scoringClass = new ScoringClass(msMsQuery,peptide);
+		//peptide.setScore(scoringClass.getScore());
+		HashSet<Peptide> peptideList = new HashSet<>();
+		// tworzymy listę kandydatów bo te widmo jeszcze nie ma
+		peptideList.add(peptide);
+		// dodajemy do ogólnej listy
+		msMsQueryListHashMap.put(msMsQuery, peptideList);
+	}
+
+	/**
+	 * dodanie peptydu do listy kandydatów widma, albo dodajemy peptyd do listy
+	 * albo dodajemy białko do peptydu jeśli ten juz jest w liscie
+	 * @param msMsQuery widmo
+	 * @param sequence peptyd
+	 * @param fastaRecord białko
+	 * @param msMsQueryListHashMap mapa widmo - lista kandydatów
+     */
+	public void addPeptideCandidateToList(MsMsQuery msMsQuery, AminoAcidSequence sequence, FastaRecord fastaRecord,
+										  HashMap<MsMsQuery, HashSet<Peptide>> msMsQueryListHashMap){
+		// tworzymy peptyd - sekwencję i białko do którego nalezy
+		Peptide peptide = new Peptide(sequence, fastaRecord.getId());
+		// możemy mieć już taki peptyd czyli znamy dla niego score
+		if (isPeptideScored(msMsQueryListHashMap.get(msMsQuery), peptide.getSequence())) {
+			addPeptideId(msMsQueryListHashMap.get(msMsQuery), peptide);
+		}
+		else { // nie było takie peptydu - liczymy mu score
+			// wyliczamy score dla peptyd - widmo
+			//ScoringClass scoringClass = new ScoringClass(msMsQuery, peptide);
+			//peptide.setScore(scoringClass.getScore());
+			msMsQueryListHashMap.get(msMsQuery).add(peptide);
+		}
 	}
 
 	/**
@@ -122,7 +160,7 @@ public class ProteinDigest
 	 * @param aminoAcidSequence - sekwencja danego peptydu
      * @return true - znamy wynik oceny, false - nie znamy
      */
-	public boolean doWeKnowThatPeptideScore(final List<Peptide> list, final AminoAcidSequence aminoAcidSequence){
+	public boolean isPeptideScored(final HashSet<Peptide> list, final AminoAcidSequence aminoAcidSequence){
 		return list.stream().map(Peptide::getSequence).filter(aminoAcidSequence::equals).findFirst().isPresent();
 	}
 
@@ -131,7 +169,7 @@ public class ProteinDigest
 	 * @param list - lista peptydów kandydackich
 	 * @param peptideNew - nowy peptyd
      */
-	public void addPeptideId(final List<Peptide> list,
+	public void addPeptideId(final HashSet<Peptide> list,
 											Peptide peptideNew){
 		list.stream().filter(o -> o.getSequence().equals(peptideNew.getSequence())).forEach(
 				o -> {

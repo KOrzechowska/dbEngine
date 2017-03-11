@@ -1,6 +1,7 @@
 import java.util.*;
 import java.util.stream.Collectors;
 
+import examples.ScoringClass;
 import mscanlib.ms.msms.MsMsQuery;
 import examples.Peptide;
 
@@ -8,30 +9,48 @@ import examples.Peptide;
 public class ChooseMaxScored
 {
     /** mapa widmo - kandydaci */
-    private HashMap<MsMsQuery, List<Peptide>> msMsQueryListHashMap;
+    private HashMap<MsMsQuery, HashSet<Peptide>> msMsQueryListHashMap;
 
     /**
      *wypełnienie mapą z poprzednich kroków
      * @param msMsQueryListHashMap - mapa widmo - peptydy kandydacki
      */
-    public ChooseMaxScored(HashMap<MsMsQuery, List<Peptide>> msMsQueryListHashMap){
+    public ChooseMaxScored(HashMap<MsMsQuery, HashSet<Peptide>> msMsQueryListHashMap){
         this.msMsQueryListHashMap = msMsQueryListHashMap;
 
+    }
+
+    public void score(){
+        // ustawienie konfiguracji scoringu
+        ScoringClass scoringClass = new ScoringClass();
+
+        Iterator<Map.Entry<MsMsQuery, HashSet<Peptide>>> it = msMsQueryListHashMap.entrySet().iterator();
+        while (it.hasNext()){
+            Map.Entry<MsMsQuery, HashSet<Peptide>> query = it.next();
+            // po kandydatach widma
+            for (Peptide peptide : query.getValue()){
+                long start = System.currentTimeMillis();
+                peptide.setScore(scoringClass.getScore(query.getKey(),peptide));
+                long end = System.currentTimeMillis();
+                System.out.println(end - start);
+
+            }
+        }
     }
 
     /**
      * znalezienie peptydów o największej wartości oceny
      */
     public void getMaxScoredPeptide(){
-        Iterator<Map.Entry<MsMsQuery, List<Peptide>>> it = msMsQueryListHashMap.entrySet().iterator();
+        Iterator<Map.Entry<MsMsQuery, HashSet<Peptide>>> it = msMsQueryListHashMap.entrySet().iterator();
         while (it.hasNext()){
-            Map.Entry<MsMsQuery, List<Peptide>> query = it.next();
+            Map.Entry<MsMsQuery, HashSet<Peptide>> query = it.next();
             String key =query.getKey().toString();
             // --- peptydy kandydackie
-            List<Peptide> peptideList = query.getValue();
+            HashSet<Peptide> peptideList = query.getValue();
 
             Peptide maxValueInMap2 = peptideList.stream().max(Comparator.comparing(Peptide::getScore)).get();
-            System.out.println("kandydatów: " + peptideList.size()+";" +" dla: "+";" + query.toString()+";"+query.getKey().getMass()+
+            System.out.println("kandydatów: " + peptideList.size()+";" +" dla: "+";" +query.getKey().toString()+";"+query.getKey().getMass()+
                     ";"+maxValueInMap2.getSequence() +";" +maxValueInMap2.getProteinIds() +";"+
                     maxValueInMap2 +";"+maxValueInMap2.getMass());
 
