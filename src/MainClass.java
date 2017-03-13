@@ -6,6 +6,7 @@ import java.util.Vector;
 
 import com.google.common.collect.Range;
 import com.google.common.collect.TreeRangeSet;
+import examples.Configuration;
 import examples.MgfRead;
 import examples.Peptide;
 import mscanlib.ms.db.FastaRecord;
@@ -21,6 +22,7 @@ public class MainClass
         PrintStream out = new PrintStream(new FileOutputStream("output.txt"));
         System.setOut(out);
         checkArgs(args);
+        Configuration configuration = new Configuration();
         long startG = System.currentTimeMillis();
         //----czytanie widm, tworzenie drzewo zakresu i mapy zakres-widma----
         long start = System.currentTimeMillis();
@@ -34,9 +36,10 @@ public class MainClass
         FastaRead fastareader = new FastaRead(args[0]);
         Vector<FastaRecord> fastaRecords = fastareader.getFastaRecords();
         //---- trawienie bazy danych
-        PeptideHashMapCreator peptideHashMapCreator = new PeptideHashMapCreator(fastaRecords, rangeMsMsQueryHashMap, treeRangeSet);
+        PeptideHashMapCreator peptideHashMapCreator = new PeptideHashMapCreator(fastaRecords, rangeMsMsQueryHashMap,
+                treeRangeSet, configuration);
         HashMap<MsMsQuery, HashSet<Peptide>> msMsQueryListHashMap = peptideHashMapCreator.getMsMsQueryListHashMap();
-        ChooseMaxScored chooseMaxScored = new ChooseMaxScored(msMsQueryListHashMap);
+        ChooseMaxScored chooseMaxScored = new ChooseMaxScored(msMsQueryListHashMap, configuration);
         start = System.currentTimeMillis();
         chooseMaxScored.score();
         chooseMaxScored.getMaxScoredPeptide();

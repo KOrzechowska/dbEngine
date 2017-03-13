@@ -1,6 +1,7 @@
 import java.util.*;
 import java.util.stream.Collectors;
 
+import examples.Configuration;
 import examples.ScoringClass;
 import mscanlib.ms.msms.MsMsQuery;
 import examples.Peptide;
@@ -10,19 +11,22 @@ public class ChooseMaxScored
 {
     /** mapa widmo - kandydaci */
     private HashMap<MsMsQuery, HashSet<Peptide>> msMsQueryListHashMap;
+    private Configuration configuration;
 
     /**
      *wypełnienie mapą z poprzednich kroków
      * @param msMsQueryListHashMap - mapa widmo - peptydy kandydacki
+     * @param configuration
      */
-    public ChooseMaxScored(HashMap<MsMsQuery, HashSet<Peptide>> msMsQueryListHashMap){
+    public ChooseMaxScored(HashMap<MsMsQuery, HashSet<Peptide>> msMsQueryListHashMap, Configuration configuration){
         this.msMsQueryListHashMap = msMsQueryListHashMap;
+        this.configuration = configuration;
 
     }
 
     public void score(){
         // ustawienie konfiguracji scoringu
-        ScoringClass scoringClass = new ScoringClass();
+        ScoringClass scoringClass = new ScoringClass(configuration);
 
         Iterator<Map.Entry<MsMsQuery, HashSet<Peptide>>> it = msMsQueryListHashMap.entrySet().iterator();
         while (it.hasNext()){

@@ -26,6 +26,7 @@ public class ScoringClass
     private Peptide peptide;
     private DbEngineScoringConfig config;
 
+
     /**
      *
      * @param sequences - lista peptydów kandydackich
@@ -111,37 +112,10 @@ public class ScoringClass
         return scoresMap;
     }
     
-    public ScoringClass(){
+    public ScoringClass(Configuration configuration){
 
-        /*
-         * Inicjalizacja map aminokwasow i modyfikacji
-         */
-        try
-        {
-            MassTools.initMaps();
-        }
-        catch (MScanException mse)
-        {
-            System.out.println("Error while initalizing maps");
-        }
 
-        /*
-         * Konfiguracja scoringu
-         */
-        config=new DbEngineScoringConfig();
-        config.setFragmentMMD(0.02);                                                            //tolerancja m/z pikow fragmentacyjnych
-        config.setFragmentMMDUnit(MassTools.MMD_UNIT_DA);
-
-        config.getProcessingConfig().setPeakDepthOptimization(MsMsSpectrumProcessingConfig.PEAK_DEPTH_FIXED);   //wybor 15 najwyzszych pikow z kazdego zakresu po 100 Da
-        config.getProcessingConfig().setPeakDepth(15);
-        config.getProcessingConfig().setWindow(100);
-
-        config.getFragmentationConfig().addIonType(MsMsFragmentationTools.B_ION);               //uwzglednienie jonow fragmentacyjnych z serii B, Y i A
-        config.getFragmentationConfig().addIonType(MsMsFragmentationTools.Y_ION);
-
-        config.getFragmentationConfig().addCharge(1);                                           //uwzglednienie jonow fragmentacyjnych o stopniu naladowania +1 i +2
-        config.getFragmentationConfig().addCharge(2);
-
+        this.config = configuration.getConfig();
         //MsMsSpectrum procSpectrum=MScanDbScoring.processSpectrum(query.getSpectrum(), config.getProcessingConfig());
         // score=MScanDbScoring.computeScore(procSpectrum,peptide.getSequence(),query.getCharge(),config);
 

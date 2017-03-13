@@ -1,5 +1,6 @@
 import com.google.common.collect.Range;
 import com.google.common.collect.TreeRangeSet;
+import examples.Configuration;
 import examples.Peptide;
 import examples.ProteinDigest;
 import mscanlib.ms.db.FastaRecord;
@@ -18,7 +19,8 @@ public class PeptideHashMapCreator {
 
     private HashMap<MsMsQuery, HashSet<Peptide>> msMsQueryListHashMap;
 
-    public PeptideHashMapCreator(Vector<FastaRecord> fastaRecords, HashMap<Range, List<MsMsQuery>> rangeListHashMap, TreeRangeSet treeRangeSet){
+    public PeptideHashMapCreator(Vector<FastaRecord> fastaRecords, HashMap<Range, List<MsMsQuery>> rangeListHashMap, TreeRangeSet treeRangeSet,
+                                 Configuration configuration){
 
         msMsQueryListHashMap = new HashMap<>();
         long start = System.currentTimeMillis();
@@ -27,7 +29,8 @@ public class PeptideHashMapCreator {
 
             // dzieli białko, porównuje z zakresami i
             // dopisuje do mapy widmo - kandydaci jeśli sie mieści w tolerancji
-            ProteinDigest proteinDigest = new ProteinDigest(fastaRecord, rangeListHashMap, msMsQueryListHashMap, treeRangeSet);
+            ProteinDigest proteinDigest = new ProteinDigest(fastaRecord, rangeListHashMap, msMsQueryListHashMap,
+                    treeRangeSet, configuration);
         }
         long stop = System.currentTimeMillis();
         System.out.println("Czas wykoania ciachania białek: "+ (stop-start));

@@ -16,6 +16,7 @@ import mscanlib.ms.mass.InSilicoDigestConfig;
 import mscanlib.ms.mass.MassTools;
 import mscanlib.ms.msms.MsMsQuery;
 
+
 import static java.lang.Math.abs;
 
 /**
@@ -37,37 +38,16 @@ public class ProteinDigest
 	 * @param treeRangeSet
 	 */
 	public ProteinDigest(FastaRecord fastaRecord, HashMap<Range, List<MsMsQuery>> rangeListHashMap,
-						 HashMap<MsMsQuery, HashSet<Peptide>> msMsQueryListHashMap, TreeRangeSet treeRangeSet)
+						 HashMap<MsMsQuery, HashSet<Peptide>> msMsQueryListHashMap, TreeRangeSet treeRangeSet,
+						 Configuration configuration)
 	{
-
-		/*
-		 * Inicjalizacja map
-		 */
-		try
-		{
-			MassTools.initMaps();
-		}
-		catch (MScanException mse)
-		{
-			System.out.println("Error while initalizing maps");
-		}
-		
-		/*
-		 * Utworzenie konfiguracji trawienia protolitycznego 
-		 */
-		InSilicoDigestConfig digestConfig=new InSilicoDigestConfig();				//obiekt reprezentujacy kofiguracje trawienia bialek
-		
-		digestConfig.setEnzyme(EnzymeMap.getEnzyme("Trypsin"));						//wybor enzymu
-		digestConfig.mLengthRange=new int[]{6,Integer.MAX_VALUE};					//zakres dlugosci peptydow
-		digestConfig.mMzRange=new double[]{300.0,2000.0};							//zakres wartosci m/z peptydow
-		  
 	    
 		/*
 		 * Utworzenie i wypisanie listy sekwencji peptydow (obiektow klasy AminoAcidSequence)
 		 * 
 		 * Dodatkowe przykladzy uzycia obiektow AminoAcidSequence sa w pliki AASequence
 		 */
-	    sequencesSet=InSilicoDigest.digestSequence(fastaRecord.getSequence(),digestConfig);
+	    sequencesSet=InSilicoDigest.digestSequence(fastaRecord.getSequence(),configuration.getDigestConfig());
     	
 	    
 	    // -- zbiór peptydów z białka ---
