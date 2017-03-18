@@ -2,6 +2,6 @@ Reading file: /media/kasia/20E03D5DE03D3A7C/studia/proz/DBEngine/CA_A.mgf
 Reading queries...
 46887 queries.
 (700.34235..700.34973)
-czas czytania wykresów: 3241
+czas czytania wykresów: 3363
 Reading FASTA file: /media/kasia/20E03D5DE03D3A7C/studia/proz/DBEngine/uniprot_sprot_Homo_sapiens.fasta...
  (20186 records)

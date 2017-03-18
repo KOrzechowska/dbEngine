@@ -26,7 +26,7 @@ import static java.lang.Math.abs;
  */
 public class ProteinDigest
 {
-    private HashSet<AminoAcidSequence> sequencesSet;
+    private HashSet<AminoAcidSequence> sequencesSet = new HashSet<>();
 	private double DELTA_VAALUE = (double)5/1000000;
 
 
@@ -47,7 +47,8 @@ public class ProteinDigest
 		 * 
 		 * Dodatkowe przykladzy uzycia obiektow AminoAcidSequence sa w pliki AASequence
 		 */
-
+		if (!sequencesSet.isEmpty())
+		sequencesSet.clear();
 	    sequencesSet=InSilicoDigest.digestSequence(fastaRecord.getSequence(),configuration.getDigestConfig());
     	
 	    
