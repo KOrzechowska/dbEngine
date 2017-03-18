@@ -47,6 +47,7 @@ public class ProteinDigest
 		 * 
 		 * Dodatkowe przykladzy uzycia obiektow AminoAcidSequence sa w pliki AASequence
 		 */
+
 	    sequencesSet=InSilicoDigest.digestSequence(fastaRecord.getSequence(),configuration.getDigestConfig());
     	
 	    

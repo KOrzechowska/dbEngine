@@ -1,9 +1,7 @@
 package examples;
 
 import mscanlib.MScanException;
-import mscanlib.ms.mass.EnzymeMap;
-import mscanlib.ms.mass.InSilicoDigestConfig;
-import mscanlib.ms.mass.MassTools;
+import mscanlib.ms.mass.*;
 import mscanlib.ms.msms.MsMsFragmentationTools;
 import mscanlib.ms.msms.dbengines.DbEngineScoringConfig;
 import mscanlib.ms.msms.spectrum.MsMsSpectrumProcessingConfig;
@@ -41,6 +39,17 @@ public class Configuration {
         digestConfig.mLengthRange=new int[]{6,Integer.MAX_VALUE};					//zakres dlugosci peptydow
         digestConfig.mMzRange=new double[]{300.0,2000.0};							//zakres wartosci m/z peptydow
 
+        //lista stalych modyfikacji (wszystkie C beda mialy te modyfikacje)
+        digestConfig.setFixedPTMs(new PTM[]{PTMMap.getPTM("Methylthio (C)")});
+
+        //lista zmiennych modyfikacji (na K, M, S i T moga, ale nie musza pojawic sie modyfikacje)
+        digestConfig.setVariablePTMs(new PTM[]{PTMMap.getPTM("Acetyl (K)"),PTMMap.getPTM("Oxidation (M)"),PTMMap.getPTM("Phospho (ST)")});
+
+        //maksymalna liczba modyfikacji zmiennych jednego rodzaju w sekwencji peptydu
+        digestConfig.mMaxSingleVarPTM=2;
+
+        //maksymalna liczba modyfikacji zmiennych wszystkich rodzajow w sekwencji peptydu
+        digestConfig.mMaxTotalVarPTMs=2;
         // ------------------------------------------------------------------------------
         // ------------- Konfiguracja ScoringClass --------------------------------------
         /*
