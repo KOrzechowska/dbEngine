@@ -6,21 +6,28 @@ import java.util.Vector;
 
 import com.google.common.collect.Range;
 import com.google.common.collect.TreeRangeSet;
+
 import examples.Configuration;
 import examples.MgfRead;
 import examples.Peptide;
 import mscanlib.ms.db.FastaRecord;
 import mscanlib.ms.msms.MsMsQuery;
 import examples.FastaRead;
+import gnu.trove.map.hash.THashMap;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 
 
 public class MainClass
 {
-
+    public static Logger logger = Logger.getRootLogger();
 
     public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
         PrintStream out = new PrintStream(new FileOutputStream("output.txt"));
         System.setOut(out);
+        BasicConfigurator.configure();
+
+
         checkArgs(args);
         Configuration configuration = new Configuration();
         long startG = System.currentTimeMillis();
@@ -28,9 +35,9 @@ public class MainClass
         long start = System.currentTimeMillis();
         MgfRead mgfReader = new MgfRead(args[1]);
         long stop = System.currentTimeMillis();
-        System.out.println("czas czytania wykresów: "+(stop-start));
+        logger.info("czas czytania wykresów: "+(stop-start));
         // ---- mapa zakres-widma----
-        HashMap<Range,List<MsMsQuery>> rangeMsMsQueryHashMap = mgfReader.getRangeMsMsQueryHashMap();
+        HashMap<Range,List<MsMsQuery>> rangeMsMsQueryHashMap = mgfReader.getMapOfRangeAndTheirMsMsQueriesList();
         TreeRangeSet treeRangeSet = mgfReader.getTreeRangeSet();
         //---- czytanie białek-----
         FastaRead fastareader = new FastaRead(args[0]);
@@ -38,23 +45,23 @@ public class MainClass
         //---- trawienie bazy danych
         PeptideHashMapCreator peptideHashMapCreator = new PeptideHashMapCreator(fastaRecords, rangeMsMsQueryHashMap,
                 treeRangeSet, configuration);
-        HashMap<MsMsQuery, HashSet<Peptide>> msMsQueryListHashMap = peptideHashMapCreator.getMsMsQueryListHashMap();
-        ChooseMaxScored chooseMaxScored = new ChooseMaxScored(msMsQueryListHashMap, configuration);
+        THashMap<MsMsQuery, HashSet<Peptide>> msMsQueryListHashMap = peptideHashMapCreator.getMsMsQueryListHashMap();
+        ScoringModule scoringModule = new ScoringModule(msMsQueryListHashMap, configuration);
         start = System.currentTimeMillis();
-        chooseMaxScored.score();
-        chooseMaxScored.getMaxScoredPeptide();
+        scoringModule.countScores();
+        scoringModule.getMaxScoredPeptides();
         stop = System.currentTimeMillis();
         long stopG = System.currentTimeMillis();
-        System.out.println("czas wykoania oceny: "+(stop-start));
-        System.out.println("czas wykoania całość: "+(stopG-startG));
-        System.out.println("----------------------");
+        logger.info("czas wykoania oceny: "+(stop-start));
+        logger.info("czas wykoania całość: "+(stopG-startG));
+        logger.info("----------------------");
 
     }
 
 
     public static void checkArgs(String[] args){
         if(args == null || args.length<2){
-            System.out.println("Nie podano argument�w");
+            logger.error("Nie podano argument�w");
             System.exit(0);
           
         }

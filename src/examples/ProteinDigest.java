@@ -1,11 +1,16 @@
 package examples;
 
 import java.util.HashMap;
+
+import gnu.trove.map.hash.THashMap;
+
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import com.google.common.collect.Range;
 import com.google.common.collect.TreeRangeSet;
+
 import mscanlib.MScanException;
 import mscanlib.ms.align.Sequence;
 import mscanlib.ms.db.FastaRecord;
@@ -17,6 +22,9 @@ import mscanlib.ms.mass.MassTools;
 import mscanlib.ms.msms.MsMsQuery;
 
 
+import mscanlib.ms.msms.dbengines.DbEngineScoringConfig;
+import org.apache.log4j.Logger;
+
 import static java.lang.Math.abs;
 
 /**
@@ -26,7 +34,8 @@ import static java.lang.Math.abs;
  */
 public class ProteinDigest
 {
-    private HashSet<AminoAcidSequence> sequencesSet = new HashSet<>();
+	public static Logger logger = Logger.getRootLogger();
+    private HashSet<AminoAcidSequence> sequencesSet;
 	private double DELTA_VAALUE = (double)5/1000000;
 
 
@@ -38,8 +47,8 @@ public class ProteinDigest
 	 * @param treeRangeSet
 	 */
 	public ProteinDigest(FastaRecord fastaRecord, HashMap<Range, List<MsMsQuery>> rangeListHashMap,
-						 HashMap<MsMsQuery, HashSet<Peptide>> msMsQueryListHashMap, TreeRangeSet treeRangeSet,
-						 Configuration configuration)
+						 THashMap<MsMsQuery, HashSet<Peptide>> msMsQueryListHashMap, TreeRangeSet treeRangeSet,
+						 InSilicoDigestConfig digestConfig)
 	{
 	    
 		/*
@@ -47,9 +56,8 @@ public class ProteinDigest
 		 * 
 		 * Dodatkowe przykladzy uzycia obiektow AminoAcidSequence sa w pliki AASequence
 		 */
-		if (!sequencesSet.isEmpty())
-		sequencesSet.clear();
-	    sequencesSet=InSilicoDigest.digestSequence(fastaRecord.getSequence(),configuration.getDigestConfig());
+		
+	    sequencesSet=InSilicoDigest.digestSequence(fastaRecord.getSequence(),digestConfig);
     	
 	    
 	    // -- zbiór peptydów z białka ---
@@ -77,7 +85,7 @@ public class ProteinDigest
 	 * @param msMsQueryListHashMap mapa widmo - kandydaci do którego sa dopisywani
      */
 	public void addPeptideCandidate(MsMsQuery msMsQuery, AminoAcidSequence sequence, FastaRecord fastaRecord,
-									HashMap<MsMsQuery, HashSet<Peptide>> msMsQueryListHashMap){
+									THashMap<MsMsQuery, HashSet<Peptide>> msMsQueryListHashMap){
 		// -- jeśli peptyd jest w tolerancji widma to jest kandyadtem
 		if (abs(msMsQuery.getMass() - sequence.getMonoMass()) < msMsQuery.getMass()*DELTA_VAALUE) {
 
@@ -99,10 +107,10 @@ public class ProteinDigest
 	 * @param msMsQueryListHashMap mapa widmo - kandydaci do którego odpisywani są
      */
 	public void createPeptideCandidateList(MsMsQuery msMsQuery, AminoAcidSequence sequence, FastaRecord fastaRecord,
-										   HashMap<MsMsQuery, HashSet<Peptide>> msMsQueryListHashMap){
+										   THashMap<MsMsQuery,HashSet<Peptide>> msMsQueryListHashMap){
 		// tworzymy peptyd - sekwencję i białko do którego nalezy
 		Peptide peptide = new Peptide(sequence, fastaRecord.getId());
-		// wyliczamy score dla peptyd - widmo
+		// wyliczamy countScores dla peptyd - widmo
 		//ScoringClass scoringClass = new ScoringClass(msMsQuery,peptide);
 		//peptide.setScore(scoringClass.getScore());
 		HashSet<Peptide> peptideList = new HashSet<>();
@@ -121,15 +129,15 @@ public class ProteinDigest
 	 * @param msMsQueryListHashMap mapa widmo - lista kandydatów
      */
 	public void addPeptideCandidateToList(MsMsQuery msMsQuery, AminoAcidSequence sequence, FastaRecord fastaRecord,
-										  HashMap<MsMsQuery, HashSet<Peptide>> msMsQueryListHashMap){
+										  THashMap<MsMsQuery,HashSet<Peptide>> msMsQueryListHashMap){
 		// tworzymy peptyd - sekwencję i białko do którego nalezy
 		Peptide peptide = new Peptide(sequence, fastaRecord.getId());
-		// możemy mieć już taki peptyd czyli znamy dla niego score
+		// możemy mieć już taki peptyd czyli znamy dla niego countScores
 		if (isPeptideScored(msMsQueryListHashMap.get(msMsQuery), peptide.getSequence())) {
 			addPeptideId(msMsQueryListHashMap.get(msMsQuery), peptide);
 		}
-		else { // nie było takie peptydu - liczymy mu score
-			// wyliczamy score dla peptyd - widmo
+		else { // nie było takie peptydu - liczymy mu countScores
+			// wyliczamy countScores dla peptyd - widmo
 			//ScoringClass scoringClass = new ScoringClass(msMsQuery, peptide);
 			//peptide.setScore(scoringClass.getScore());
 			msMsQueryListHashMap.get(msMsQuery).add(peptide);

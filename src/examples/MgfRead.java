@@ -13,6 +13,7 @@ import mscanlib.ms.msms.*;
 import mscanlib.ms.msms.dbengines.mascot.io.*;
 import mscanlib.ms.msms.io.*;
 import mscanlib.ms.msms.spectrum.*;
+import org.apache.log4j.Logger;
 
 
 /**
@@ -24,11 +25,12 @@ import mscanlib.ms.msms.spectrum.*;
  */
 public class MgfRead
 {
+	public static Logger logger = Logger.getRootLogger();
     MsMsQuery  queries[]=null;     //tablica zapytan do systemu identyfikacji (widm MS/MS wraz z dodatkowymi informacjami)
 	/**drzewo zakresów*/
 	TreeRangeSet treeRangeSet = TreeRangeSet.create();
 	/** mapa zakres - lista widm */
-	HashMap<Range,List<MsMsQuery>> rangeMsMsQueryHashMap;
+	HashMap<Range,List<MsMsQuery>> mapOfRangeAndTheirMsMsQueriesList;
 	/**
 	 * Konstruktor
 	 * 
@@ -48,9 +50,9 @@ public class MgfRead
 			 */
 			File fastFile = new File(filename);
             if(!fastFile.isDirectory() && fastFile.toString().endsWith(".mgf")){
-			System.out.println("Reading file: " + filename);
+			logger.info("Reading file: " + filename);
 
-				rangeMsMsQueryHashMap = new HashMap<>();
+				mapOfRangeAndTheirMsMsQueriesList = new HashMap<>();
 
 			if ((queries=this.readQueries(filename))!=null)
 			{
@@ -73,30 +75,21 @@ public class MgfRead
 						 */
 						MsMsSpectrum spectrum=queries[i].getSpectrum();
 
-						// jeszcze zakres nie ma widma
-						if(!rangeMsMsQueryHashMap.containsKey(treeRangeSet.rangeContaining((float)queries[i].getMass())))
-						{
-							List<MsMsQuery> msMsQueryList = new ArrayList<>();
-							msMsQueryList.add(queries[i]);
-							rangeMsMsQueryHashMap.put(treeRangeSet.rangeContaining((float)queries[i].getMass()),msMsQueryList);
-						}// jeśli już jest taki klucz, to dodajemy mu kolejne widmo
-						else{
-							rangeMsMsQueryHashMap.get(treeRangeSet.rangeContaining((float)queries[i].getMass())).add(queries[i]);
-						}
+						addMsMsQueryToRange(queries[i]);
 					}
 
 				}
-				System.out.println(treeRangeSet.rangeContaining((float)queries[3].getMass()));
+				logger.info(treeRangeSet.rangeContaining((float)queries[3].getMass()));
 
 
 			}
 		}else {
-		    throw new Exception("Z�a �cie�ka dla mgf");
+		    throw new Exception("Wrong path to mgf");
 		}
 		}
 		catch (MScanException mse)
 		{
-			System.out.println("ERROR: " + mse.toString());
+			logger.error("ERROR: " + mse.toString());
 		} catch (Exception e)
         {
             
@@ -104,13 +97,26 @@ public class MgfRead
         }
 
 	}
+
+	public void addMsMsQueryToRange(MsMsQuery query){
+		// jeszcze zakres nie ma widma
+		if(!mapOfRangeAndTheirMsMsQueriesList.containsKey(treeRangeSet.rangeContaining((float)query.getMass())))
+		{
+			List<MsMsQuery> msMsQueryList = new ArrayList<>();
+			msMsQueryList.add(query);
+			mapOfRangeAndTheirMsMsQueriesList.put(treeRangeSet.rangeContaining((float)query.getMass()),msMsQueryList);
+		}// jeśli już jest taki klucz, to dodajemy mu kolejne widmo
+		else{
+			mapOfRangeAndTheirMsMsQueriesList.get(treeRangeSet.rangeContaining((float)query.getMass())).add(query);
+		}
+	}
 	
 	public MsMsQuery[] getMsMs(){
 	    return queries;
 	}
 
-	public HashMap<Range, List<MsMsQuery>> getRangeMsMsQueryHashMap() {
-		return rangeMsMsQueryHashMap;
+	public HashMap<Range, List<MsMsQuery>> getMapOfRangeAndTheirMsMsQueriesList() {
+		return mapOfRangeAndTheirMsMsQueriesList;
 	}
 
 	public TreeRangeSet getTreeRangeSet() {
@@ -138,7 +144,7 @@ public class MgfRead
 			/*
 			 * odczyt pliku MGF
 			 */
-			System.out.println("Reading queries...");
+			logger.info("Reading queries...");
 			fileReader=new MascotMgfFileReader(filename,scanConfig);
 			fileReader.readFile();
 			
@@ -147,21 +153,21 @@ public class MgfRead
 			 */
 			queries=fileReader.getQueries();
 			
-			System.out.println(queries.length + " queries.");
+			logger.info(queries.length + " queries.");
 			
 			/*
 			 * pobranie komunikatow bledow i ostrzezen 
 			 */
 			if ((msg=fileReader.getErrors())!=null && msg.size()>0)
 				for (int i=0;i<msg.size();i++)
-					System.out.println(msg.get(i));
+					logger.info(msg.get(i));
 			if ((msg=fileReader.getWarnings())!=null && msg.size()>0)
 				for (int i=0;i<msg.size();i++)
-					System.out.println(msg.get(i));
+					logger.info(msg.get(i));
 		}
 		catch (MScanException mse)
 		{
-			System.out.println(mse.toString());
+			logger.info(mse.toString());
 			queries=null;
 		}
 		return(queries);

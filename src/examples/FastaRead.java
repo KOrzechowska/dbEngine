@@ -9,6 +9,7 @@ import mscanlib.ms.db.FastaRecord;
 import mscanlib.ms.db.io.FastaFileReader;
 import mscanlib.ms.db.io.FastaImportConfig;
 import mscanlib.ms.mass.MassTools;
+import org.apache.log4j.Logger;
 
 /**
  * Program odczytuje plik FASTA i wypisuje informacje o jego rekordach<br>
@@ -19,6 +20,8 @@ import mscanlib.ms.mass.MassTools;
  */
 public class FastaRead
 {
+	public static Logger logger = Logger.getRootLogger();
+
     FastaImportConfig   fastaConfig=null;       //konfigurcja odczytu
     FastaFileReader     fastaReader=null;       //obiekt odczytujacy pliki FASTA
     Vector<FastaRecord> fastaRecords=null;      //wektor rekordow FASTA
@@ -47,12 +50,12 @@ public class FastaRead
 			 */
 			File fastFile = new File(filename);
 			if(!fastFile.isDirectory() && fastFile.toString().endsWith(".fasta")){
-				System.out.println("Reading FASTA file: " + filename + "...");
+				logger.info("Reading FASTA file: " + filename + "...");
 			
 			fastaReader=new FastaFileReader(filename,fastaConfig);
 			fastaRecords=fastaReader.readRecords();
 			
-			System.out.println(" (" + fastaRecords.size() + " records)");
+			logger.info(" (" + fastaRecords.size() + " records)");
 
 		}else{
 		    throw new Exception("Z�a �cie�ka dla fasta file");
@@ -60,7 +63,7 @@ public class FastaRead
 		}
 		catch (MScanException mse)
 		{
-			System.out.println(mse);
+			logger.error(mse);
 		} catch (Exception e)
         {
             e.printStackTrace();

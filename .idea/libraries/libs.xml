@@ -1,9 +1,15 @@
 <component name="libraryTable">
   <library name="libs">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/libs/combinatoricslib-2.1.jar!/" />
-      <root url="jar://$PROJECT_DIR$/libs/combination.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/guava-20.0.jar!/" />
       <root url="jar://$PROJECT_DIR$/libs/MScan.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/guava-13.0.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/log4j.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/log4j.jar.zip!/" />
+      <root url="jar://$PROJECT_DIR$/libs/trove-3.0.3.zip!/" />
+      <root url="jar://$PROJECT_DIR$/libs/combination.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/guava-11.0.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/combinatoricslib-2.1.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

@@ -82,14 +82,14 @@ public class ScoringClass
            // System.out.println("\n" + query.getSpectrum());
                 
             /*
-             * Preprocessing widma na potrzeby wyznaczenia score
+             * Preprocessing widma na potrzeby wyznaczenia countScores
              */
             MsMsSpectrum procSpectrum=MScanDbScoring.processSpectrum(query.getSpectrum(), config.getProcessingConfig());
            // System.out.println("\n" + procSpectrum);
                 
                 
             /*
-             * Wyznaczenie score dla sekwencji kandydackich
+             * Wyznaczenie countScores dla sekwencji kandydackich
              */
             System.out.println("\nScoring candidate peptides: ");
             /*AminoAcidSequence sequences[]={   new AminoAcidSequence("EFNAETFTFHADICTLSEK"),           //lista sekwencji kandydackich
@@ -117,7 +117,7 @@ public class ScoringClass
 
         this.config = configuration.getConfig();
         //MsMsSpectrum procSpectrum=MScanDbScoring.processSpectrum(query.getSpectrum(), config.getProcessingConfig());
-        // score=MScanDbScoring.computeScore(procSpectrum,peptide.getSequence(),query.getCharge(),config);
+        // countScores=MScanDbScoring.computeScore(procSpectrum,peptide.getSequence(),query.getCharge(),config);
 
     }
 
