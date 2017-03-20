@@ -41,7 +41,7 @@ public class Configuration {
 
         //lista stalych modyfikacji (wszystkie C beda mialy te modyfikacje)
         digestConfig.setFixedPTMs(new PTM[]{PTMMap.getPTM("Methylthio (C)")});
-        /*
+
         //lista zmiennych modyfikacji (na K, M, S i T moga, ale nie musza pojawic sie modyfikacje)
         digestConfig.setVariablePTMs(new PTM[]{PTMMap.getPTM("Acetyl (K)"),PTMMap.getPTM("Oxidation (M)"),PTMMap.getPTM("Phospho (ST)")});
 
@@ -50,7 +50,7 @@ public class Configuration {
 
         //maksymalna liczba modyfikacji zmiennych wszystkich rodzajow w sekwencji peptydu
         digestConfig.mMaxTotalVarPTMs=2;
-        */
+
 
 
         // ------------------------------------------------------------------------------

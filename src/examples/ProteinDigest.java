@@ -42,11 +42,11 @@ public class ProteinDigest
     /**
 	 * Konstruktor
 	 * @param fastaRecord wiersz z bazy danych - czyli białko
-	 * @param rangeListHashMap - mapa zakres - widmo
+	 * @param rangeMsMsQueryHashMap - mapa zakres - widmo
 	 * @param msMsQueryListHashMap - globalna (wynikowa) mapa widmo - peptydy
 	 * @param treeRangeSet
 	 */
-	public ProteinDigest(FastaRecord fastaRecord, HashMap<Range, List<MsMsQuery>> rangeListHashMap,
+	public ProteinDigest(FastaRecord fastaRecord, HashMap<Range, List<MsMsQuery>> rangeMsMsQueryHashMap,
 						 THashMap<MsMsQuery, HashSet<Peptide>> msMsQueryListHashMap, TreeRangeSet treeRangeSet,
 						 InSilicoDigestConfig digestConfig)
 	{
@@ -54,11 +54,13 @@ public class ProteinDigest
 		/*
 		 * Utworzenie i wypisanie listy sekwencji peptydow (obiektow klasy AminoAcidSequence)
 		 * 
-		 * Dodatkowe przykladzy uzycia obiektow AminoAcidSequence sa w pliki AASequence
+		 * Dodatkowe przyklady uzycia obiektow AminoAcidSequence sa w pliki AASequence
 		 */
-		
-	    sequencesSet=InSilicoDigest.digestSequence(fastaRecord.getSequence(),digestConfig);
-    	
+
+
+		try {
+			sequencesSet = InSilicoDigest.digestSequence(fastaRecord.getSequence(), digestConfig);
+
 	    
 	    // -- zbiór peptydów z białka ---
     	for (AminoAcidSequence sequence: sequencesSet){
@@ -66,7 +68,7 @@ public class ProteinDigest
 			if(treeRangeSet.contains((float)sequence.getMonoMass())){
 				Range range = treeRangeSet.rangeContaining((float)sequence.getMonoMass()); {
 					// lista widm dla danego zakresu
-					List<MsMsQuery> msMsQueryList = rangeListHashMap.get(range);
+					List<MsMsQuery> msMsQueryList = rangeMsMsQueryHashMap.get(range);
 					if (msMsQueryList != null) { // jeśli zakres ma widma
 						for (MsMsQuery msMsQuery : msMsQueryList) {
 							addPeptideCandidate(msMsQuery, sequence, fastaRecord, msMsQueryListHashMap);
@@ -75,6 +77,10 @@ public class ProteinDigest
 				}
 			}
     	}
+
+		}catch (OutOfMemoryError e){
+			logger.error("Za duży HashSet "+fastaRecord.getId()+"  "+fastaRecord.getSequence()+" ");
+		}
 	}
 
 	/**
@@ -90,10 +96,10 @@ public class ProteinDigest
 		if (abs(msMsQuery.getMass() - sequence.getMonoMass()) < msMsQuery.getMass()*DELTA_VAALUE) {
 
 			// czy widmo ma już kandydatów
-			if (!msMsQueryListHashMap.containsKey(msMsQuery)) { // nie ma
-				createPeptideCandidateList(msMsQuery, sequence, fastaRecord, msMsQueryListHashMap);
-			} else { // ma
+			if (msMsQueryListHashMap.containsKey(msMsQuery)) {
 				addPeptideCandidateToList(msMsQuery, sequence, fastaRecord, msMsQueryListHashMap);
+			} else {
+				createPeptideCandidateList(msMsQuery, sequence, fastaRecord, msMsQueryListHashMap);
 			}
 		}
 	}
@@ -110,9 +116,6 @@ public class ProteinDigest
 										   THashMap<MsMsQuery,HashSet<Peptide>> msMsQueryListHashMap){
 		// tworzymy peptyd - sekwencję i białko do którego nalezy
 		Peptide peptide = new Peptide(sequence, fastaRecord.getId());
-		// wyliczamy countScores dla peptyd - widmo
-		//ScoringClass scoringClass = new ScoringClass(msMsQuery,peptide);
-		//peptide.setScore(scoringClass.getScore());
 		HashSet<Peptide> peptideList = new HashSet<>();
 		// tworzymy listę kandydatów bo te widmo jeszcze nie ma
 		peptideList.add(peptide);
@@ -138,8 +141,6 @@ public class ProteinDigest
 		}
 		else { // nie było takie peptydu - liczymy mu countScores
 			// wyliczamy countScores dla peptyd - widmo
-			//ScoringClass scoringClass = new ScoringClass(msMsQuery, peptide);
-			//peptide.setScore(scoringClass.getScore());
 			msMsQueryListHashMap.get(msMsQuery).add(peptide);
 		}
 	}

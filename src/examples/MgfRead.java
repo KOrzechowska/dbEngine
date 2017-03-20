@@ -25,7 +25,6 @@ import org.apache.log4j.Logger;
  */
 public class MgfRead
 {
-	private double DELTA_VAALUE = (double)5/1000000;
 	public static Logger logger = Logger.getRootLogger();
     MsMsQuery  queries[]=null;     //tablica zapytan do systemu identyfikacji (widm MS/MS wraz z dodatkowymi informacjami)
 	/**drzewo zakresów*/
@@ -67,8 +66,8 @@ public class MgfRead
 					if (queries[i]!=null)
 					{
 						//tolerancja =/-detaMas
-						float min = (float) (queries[i].getMass()-queries[i].getMass()*DELTA_VAALUE);
-						float max = (float) (queries[i].getMass()+queries[i].getMass()*DELTA_VAALUE);
+						float min = (float) (queries[i].getMass()-5*queries[i].getMass()/1000000);
+						float max = (float) (queries[i].getMass()+5*queries[i].getMass()/1000000);
 						treeRangeSet.add(Range.open(min,max));
 
 						/*

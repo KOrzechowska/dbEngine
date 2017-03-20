@@ -27,18 +27,19 @@ public class PeptideHashMapCreator {
     private InSilicoDigestConfig digestConfig;
 
     
-    public PeptideHashMapCreator(Vector<FastaRecord> fastaRecords, HashMap<Range, List<MsMsQuery>> rangeListHashMap, TreeRangeSet treeRangeSet,
+    public PeptideHashMapCreator(Vector<FastaRecord> fastaRecords, HashMap<Range, List<MsMsQuery>> rangeMsMsQueryHashMap, TreeRangeSet treeRangeSet,
                                  Configuration configuration){
 
         msMsQueryListHashMap = new THashMap<>();
         long start = System.currentTimeMillis();
         this.digestConfig = configuration.getDigestConfig();
         // dla każdego białka
-        for (FastaRecord fastaRecord :fastaRecords){
+        for (FastaRecord fastaRecord :fastaRecords)
+        {
 
             // dzieli białko, porównuje z zakresami i
             // dopisuje do mapy widmo - kandydaci jeśli sie mieści w tolerancji
-            ProteinDigest proteinDigest = new ProteinDigest(fastaRecord, rangeListHashMap, msMsQueryListHashMap,
+            ProteinDigest proteinDigest = new ProteinDigest(fastaRecord, rangeMsMsQueryHashMap, msMsQueryListHashMap,
                     treeRangeSet, digestConfig);
         }
         long stop = System.currentTimeMillis();
