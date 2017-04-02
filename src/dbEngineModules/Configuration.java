@@ -1,6 +1,5 @@
-package examples;
+package dbEngineModules;
 
-import mscanlib.ms.mass.EnzymeMap;
 import mscanlib.ms.mass.InSilicoDigestConfig;
 import mscanlib.ms.mass.MassTools;
 import mscanlib.ms.msms.MsMsFragmentationTools;

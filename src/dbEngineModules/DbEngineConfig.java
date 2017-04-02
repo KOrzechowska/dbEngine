@@ -1,4 +1,4 @@
-package examples;
+package dbEngineModules;
 
 import mscanlib.common.MScanException;
 import mscanlib.io.MScanParameters;
