@@ -4,12 +4,11 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import examples.Configuration;
-import examples.ScoringClass;
+import dbEngineModules.Configuration;
+import dbEngineModules.ScoringClass;
 import mscanlib.ms.msms.MsMsQuery;
-import examples.Peptide;
+import dbEngineModules.Peptide;
 import gnu.trove.map.hash.THashMap;
-import mscanlib.system.MScanSystemTools;
 import org.apache.log4j.Logger;
 
 

@@ -1,15 +1,13 @@
 import com.google.common.collect.Range;
 import com.google.common.collect.TreeRangeSet;
 
-import examples.Configuration;
-import examples.Peptide;
-import examples.ProteinDigest;
+import dbEngineModules.Configuration;
+import dbEngineModules.Peptide;
+import dbEngineModules.ProteinDigest;
 import gnu.trove.map.hash.THashMap;
 import mscanlib.ms.db.FastaRecord;
-import mscanlib.ms.mass.AminoAcidSequence;
 import mscanlib.ms.mass.InSilicoDigestConfig;
 import mscanlib.ms.msms.MsMsQuery;
-import mscanlib.ms.msms.dbengines.DbEngineScoringConfig;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;

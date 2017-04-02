@@ -7,12 +7,12 @@ import java.util.Vector;
 import com.google.common.collect.Range;
 import com.google.common.collect.TreeRangeSet;
 
-import examples.Configuration;
-import examples.MgfRead;
-import examples.Peptide;
+import dbEngineModules.Configuration;
+import dbEngineModules.MgfRead;
+import dbEngineModules.Peptide;
 import mscanlib.ms.db.FastaRecord;
 import mscanlib.ms.msms.MsMsQuery;
-import examples.FastaRead;
+import dbEngineModules.FastaRead;
 import gnu.trove.map.hash.THashMap;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
