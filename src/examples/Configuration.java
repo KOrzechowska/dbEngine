@@ -1,10 +1,11 @@
 package examples;
 
-import mscanlib.MScanException;
-import mscanlib.ms.mass.*;
+import mscanlib.ms.mass.EnzymeMap;
+import mscanlib.ms.mass.InSilicoDigestConfig;
+import mscanlib.ms.mass.MassTools;
 import mscanlib.ms.msms.MsMsFragmentationTools;
 import mscanlib.ms.msms.dbengines.DbEngineScoringConfig;
-import mscanlib.ms.msms.spectrum.MsMsSpectrumProcessingConfig;
+import mscanlib.ms.msms.dbengines.DbEngineSearchConfig;
 import org.apache.log4j.Logger;
 
 public class Configuration {
@@ -15,30 +16,26 @@ public class Configuration {
 
     private DbEngineScoringConfig config;
 
+    private DbEngineSearchConfig dbEngineSearchConfig;
+
     public Configuration(){
 
+        DbEngineConfig dbEngineConfig = new DbEngineConfig();
+        this.dbEngineSearchConfig = dbEngineConfig.getConfig();
+
         // --------- Konfiguracja Protein Digest---------------------------------------
-        /*
-		 * Inicjalizacja map
-		 */
-        try
-        {
-            MassTools.initMaps();
-        }
-        catch (MScanException mse)
-        {
-            logger.error("Error while initalizing maps");
-        }
 
 		/*
 		 * Utworzenie konfiguracji trawienia protolitycznego
 		 */
-        digestConfig=new InSilicoDigestConfig();				//obiekt reprezentujacy kofiguracje trawienia bialek
+        digestConfig=dbEngineSearchConfig.getDigestConfig();				//obiekt reprezentujacy kofiguracje trawienia bialek
 
-        digestConfig.setEnzyme(EnzymeMap.getEnzyme("Trypsin"));						//wybor enzymu
-        digestConfig.mLengthRange=new int[]{6,Integer.MAX_VALUE};					//zakres dlugosci peptydow
-        digestConfig.mMzRange=new double[]{300.0,2000.0};							//zakres wartosci m/z peptydow
-
+        System.out.println("InsilicoDigestConfig "+digestConfig);
+        //digestConfig.setEnzyme(EnzymeMap.getEnzyme("Trypsin"));						//wybor enzymu
+        //digestConfig.mLengthRange=new int[]{6,Integer.MAX_VALUE};					//zakres dlugosci peptydow
+        //digestConfig.mMzRange=new double[]{300.0,2000.0};							//zakres wartosci m/z peptydow
+/*
+        // Modyfikacje
         //lista stalych modyfikacji (wszystkie C beda mialy te modyfikacje)
         digestConfig.setFixedPTMs(new PTM[]{PTMMap.getPTM("Methylthio (C)")});
 
@@ -51,21 +48,14 @@ public class Configuration {
         //maksymalna liczba modyfikacji zmiennych wszystkich rodzajow w sekwencji peptydu
         digestConfig.mMaxTotalVarPTMs=2;
 
+        //ograniczenie dla białka mucyna
+        digestConfig.mLengthRange=new int[]{6,40};
+        */
+
 
 
         // ------------------------------------------------------------------------------
         // ------------- Konfiguracja ScoringClass --------------------------------------
-        /*
-         * Inicjalizacja map aminokwasow i modyfikacji
-         */
-        try
-        {
-            MassTools.initMaps();
-        }
-        catch (MScanException mse)
-        {
-            logger.error("Error while initalizing maps");
-        }
 
         /*
          * Konfiguracja scoringu
@@ -74,7 +64,7 @@ public class Configuration {
         config.setFragmentMMD(0.02);                                                            //tolerancja m/z pikow fragmentacyjnych
         config.setFragmentMMDUnit(MassTools.MMD_UNIT_DA);
 
-        config.getProcessingConfig().setPeakDepthOptimization(MsMsSpectrumProcessingConfig.PEAK_DEPTH_FIXED);   //wybor 15 najwyzszych pikow z kazdego zakresu po 100 Da
+        //config.getProcessingConfig().setPeakDepthOptimization(MsMsSpectrumProcessingConfig.PEAK_DEPTH_FIXED);   //wybor 15 najwyzszych pikow z kazdego zakresu po 100 Da
         config.getProcessingConfig().setPeakDepth(15);
         config.getProcessingConfig().setWindow(100);
 

@@ -1,6 +1,6 @@
 package examples;
 
-import mscanlib.MScanException;
+import mscanlib.common.MScanException;
 import mscanlib.ms.mass.AminoAcidSequence;
 import mscanlib.ms.mass.MassTools;
 import mscanlib.ms.mass.PTMMap;

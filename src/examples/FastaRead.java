@@ -3,7 +3,7 @@ package examples;
 import java.io.File;
 import java.util.Vector;
 
-import mscanlib.MScanException;
+import mscanlib.common.MScanException;
 import mscanlib.ms.db.DBTools;
 import mscanlib.ms.db.FastaRecord;
 import mscanlib.ms.db.io.FastaFileReader;

@@ -1,129 +1,25 @@
 package examples;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-
-import mscanlib.MScanException;
-import mscanlib.ms.mass.AminoAcidSequence;
-import mscanlib.ms.mass.MassTools;
-import mscanlib.ms.msms.MsMsFragmentationTools;
+import mscanlib.common.MScanException;
 import mscanlib.ms.msms.MsMsQuery;
 import mscanlib.ms.msms.dbengines.DbEngineScoringConfig;
 import mscanlib.ms.msms.dbengines.mascot.io.MascotMgfFileReader;
 import mscanlib.ms.msms.dbengines.mscandb.MScanDbScoring;
 import mscanlib.ms.msms.io.MsMsScanConfig;
 import mscanlib.ms.msms.spectrum.MsMsSpectrum;
-import mscanlib.ms.msms.spectrum.MsMsSpectrumProcessingConfig;
+
+import java.util.ArrayList;
 
 public class ScoringClass
 {
-    /** mapa peptyd wynik*/
-    HashMap<Peptide, Double> scoresMap;
     double score;
-    private MsMsQuery query;
-    private Peptide peptide;
     private DbEngineScoringConfig config;
-
-
-    /**
-     *
-     * @param sequences - lista peptydów kandydackich
-     * @param query - widmo
-     */
-    public ScoringClass(List<Peptide> sequences, MsMsQuery query)
-    {
-        /*
-         * Inicjalizacja map aminokwasow i modyfikacji
-         */
-        try
-        {
-            MassTools.initMaps();
-        }
-        catch (MScanException mse)
-        {
-            System.out.println("Error while initalizing maps");
-        }
-
-        /*
-         * Konfiguracja scoringu
-         */
-        DbEngineScoringConfig config=new DbEngineScoringConfig();
-        config.setFragmentMMD(0.02);                                                            //tolerancja m/z pikow fragmentacyjnych
-        config.setFragmentMMDUnit(MassTools.MMD_UNIT_DA);
-        
-        config.getProcessingConfig().setPeakDepthOptimization(MsMsSpectrumProcessingConfig.PEAK_DEPTH_FIXED);   //wybor 15 najwyzszych pikow z kazdego zakresu po 100 Da
-        config.getProcessingConfig().setPeakDepth(15);
-        config.getProcessingConfig().setWindow(100);
-
-        config.getFragmentationConfig().addIonType(MsMsFragmentationTools.B_ION);               //uwzglednienie jonow fragmentacyjnych z serii B, Y i A
-        config.getFragmentationConfig().addIonType(MsMsFragmentationTools.Y_ION);
-        
-        config.getFragmentationConfig().addCharge(1);                                           //uwzglednienie jonow fragmentacyjnych o stopniu naladowania +1 i +2                            
-        config.getFragmentationConfig().addCharge(2);
-        //System.out.println(config);
-        
-        
-        /*
-         * Odczyt pliku MGF, pobranie pierwszego widma, pretworzenie go i wznaczenie dopasowania do listy peptydow kandydackich
-         */
-        //MsMsQuery queries[]=null;                                                             //tablica zapytan do systemu identyfikacji (widm MS/MS wraz z dodatkowymi informacjami)                                         
-        //if ((queries=this.readQueries("CA_A_1.mgf"))!=null && queries.length>0)
-        {
-            /*
-             * Pobranie pierwszego zapytania
-             */
-            //MsMsQuery query=queries[0];
-                
-            /*
-             * Wyswietlenie informacji o widmie
-             */
-           // System.out.println("\n" + query.getSpectrum());
-                
-            /*
-             * Preprocessing widma na potrzeby wyznaczenia countScores
-             */
-            MsMsSpectrum procSpectrum=MScanDbScoring.processSpectrum(query.getSpectrum(), config.getProcessingConfig());
-           // System.out.println("\n" + procSpectrum);
-                
-                
-            /*
-             * Wyznaczenie countScores dla sekwencji kandydackich
-             */
-            System.out.println("\nScoring candidate peptides: ");
-            /*AminoAcidSequence sequences[]={   new AminoAcidSequence("EFNAETFTFHADICTLSEK"),           //lista sekwencji kandydackich
-                                            new AminoAcidSequence("SEKEFNAETFTFHADICTL"),
-                                            new AminoAcidSequence("EFNAEHADICTLSEKTFTF"),
-                                            new AminoAcidSequence("HADICTLSEKEFNAETFTF")};
-                */
-            scoresMap = new HashMap<Peptide, Double>();
-            for (Peptide sequence:sequences)
-            {
-
-                    double score=MScanDbScoring.computeScore(procSpectrum,sequence.getSequence(),query.getCharge(),config);   //miara dopasowania widm
-                    scoresMap.put(sequence,score);
-
-            }       
-        }
-    }
-    
-    public HashMap<Peptide, Double> getScores(){
-        return scoresMap;
-    }
     
     public ScoringClass(Configuration configuration){
-
-
         this.config = configuration.getConfig();
-        //MsMsSpectrum procSpectrum=MScanDbScoring.processSpectrum(query.getSpectrum(), config.getProcessingConfig());
-        // countScores=MScanDbScoring.computeScore(procSpectrum,peptide.getSequence(),query.getCharge(),config);
-
     }
 
     public double getScore(MsMsQuery query, Peptide peptide) {
-        this.query = query;
-        this.peptide = peptide;
         MsMsSpectrum procSpectrum=MScanDbScoring.processSpectrum(query.getSpectrum(), config.getProcessingConfig());
         score=MScanDbScoring.computeScore(procSpectrum,peptide.getSequence(),query.getCharge(),config);
         return score;

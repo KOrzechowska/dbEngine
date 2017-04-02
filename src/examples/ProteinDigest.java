@@ -1,29 +1,18 @@
 package examples;
 
-import java.util.HashMap;
-
-import gnu.trove.map.hash.THashMap;
-
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-
 import com.google.common.collect.Range;
 import com.google.common.collect.TreeRangeSet;
-
-import mscanlib.MScanException;
-import mscanlib.ms.align.Sequence;
+import gnu.trove.map.hash.THashMap;
 import mscanlib.ms.db.FastaRecord;
 import mscanlib.ms.mass.AminoAcidSequence;
-import mscanlib.ms.mass.EnzymeMap;
 import mscanlib.ms.mass.InSilicoDigest;
 import mscanlib.ms.mass.InSilicoDigestConfig;
-import mscanlib.ms.mass.MassTools;
 import mscanlib.ms.msms.MsMsQuery;
-
-
-import mscanlib.ms.msms.dbengines.DbEngineScoringConfig;
 import org.apache.log4j.Logger;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 
 import static java.lang.Math.abs;
 
@@ -38,6 +27,11 @@ public class ProteinDigest
     private HashSet<AminoAcidSequence> sequencesSet;
 	private double DELTA_VAALUE = (double)5/1000000;
 
+	private FastaRecord fastaRecord;
+	private HashMap<Range, List<MsMsQuery>> rangeMsMsQueryHashMap;
+	private THashMap<MsMsQuery, HashSet<Peptide>> msMsQueryListHashMap;
+	private TreeRangeSet treeRangeSet;
+	private InSilicoDigestConfig digestConfig;
 
     /**
 	 * Konstruktor
@@ -50,33 +44,41 @@ public class ProteinDigest
 						 THashMap<MsMsQuery, HashSet<Peptide>> msMsQueryListHashMap, TreeRangeSet treeRangeSet,
 						 InSilicoDigestConfig digestConfig)
 	{
-	    
+
+		this.fastaRecord = fastaRecord;
+		this.rangeMsMsQueryHashMap = rangeMsMsQueryHashMap;
+		this.msMsQueryListHashMap = msMsQueryListHashMap;
+		this.treeRangeSet = treeRangeSet;
+		this.digestConfig = digestConfig;
+
+
+	}
+
+	public void createPeptidesAndAddThenToTheCandidateList(){
 		/*
 		 * Utworzenie i wypisanie listy sekwencji peptydow (obiektow klasy AminoAcidSequence)
-		 * 
+		 *
 		 * Dodatkowe przyklady uzycia obiektow AminoAcidSequence sa w pliki AASequence
 		 */
-
-
 		try {
 			sequencesSet = InSilicoDigest.digestSequence(fastaRecord.getSequence(), digestConfig);
 
-	    
-	    // -- zbiór peptydów z białka ---
-    	for (AminoAcidSequence sequence: sequencesSet){
-			// -- jeśli masa peptydu mieści się w zakresie
-			if(treeRangeSet.contains((float)sequence.getMonoMass())){
-				Range range = treeRangeSet.rangeContaining((float)sequence.getMonoMass()); {
-					// lista widm dla danego zakresu
-					List<MsMsQuery> msMsQueryList = rangeMsMsQueryHashMap.get(range);
-					if (msMsQueryList != null) { // jeśli zakres ma widma
-						for (MsMsQuery msMsQuery : msMsQueryList) {
-							addPeptideCandidate(msMsQuery, sequence, fastaRecord, msMsQueryListHashMap);
+
+			// -- zbiór peptydów z białka ---
+			for (AminoAcidSequence sequence: sequencesSet){
+				// -- jeśli masa peptydu mieści się w zakresie
+				if(treeRangeSet.contains((float)sequence.getMonoMass())){
+					Range range = treeRangeSet.rangeContaining((float)sequence.getMonoMass()); {
+						// lista widm dla danego zakresu
+						List<MsMsQuery> msMsQueryList = rangeMsMsQueryHashMap.get(range);
+						if (msMsQueryList != null) { // jeśli zakres ma widma
+							for (MsMsQuery msMsQuery : msMsQueryList) {
+								addPeptideCandidate(msMsQuery, sequence, fastaRecord, msMsQueryListHashMap);
+							}
 						}
 					}
 				}
 			}
-    	}
 
 		}catch (OutOfMemoryError e){
 			logger.error("Za duży HashSet "+fastaRecord.getId()+"  "+fastaRecord.getSequence()+" ");

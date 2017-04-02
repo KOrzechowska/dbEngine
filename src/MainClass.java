@@ -43,9 +43,12 @@ public class MainClass
         FastaRead fastareader = new FastaRead(args[0]);
         Vector<FastaRecord> fastaRecords = fastareader.getFastaRecords();
         //---- trawienie bazy danych
+        long startPeptideCuts =  System.currentTimeMillis();
         PeptideHashMapCreator peptideHashMapCreator = new PeptideHashMapCreator(fastaRecords, rangeMsMsQueryHashMap,
                 treeRangeSet, configuration);
-        THashMap<MsMsQuery, HashSet<Peptide>> msMsQueryListHashMap = peptideHashMapCreator.getMsMsQueryListHashMap();
+        THashMap<MsMsQuery, HashSet<Peptide>> msMsQueryListHashMap = peptideHashMapCreator.createMapRangeAndCandidateList();
+        long stopPeptidesCuts = System.currentTimeMillis();
+        logger.info("Czas wykoania ciachania białek: "+ (stopPeptidesCuts-startPeptideCuts));
         ScoringModule scoringModule = new ScoringModule(msMsQueryListHashMap, configuration);
         start = System.currentTimeMillis();
         scoringModule.countScores();

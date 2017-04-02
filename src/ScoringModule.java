@@ -1,3 +1,6 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -6,6 +9,7 @@ import examples.ScoringClass;
 import mscanlib.ms.msms.MsMsQuery;
 import examples.Peptide;
 import gnu.trove.map.hash.THashMap;
+import mscanlib.system.MScanSystemTools;
 import org.apache.log4j.Logger;
 
 
@@ -47,6 +51,12 @@ public class ScoringModule
      * znalezienie peptydów o największej wartości oceny
      */
     public void getMaxScoredPeptides(){
+        BufferedWriter writer = null;
+        try {
+             writer = new BufferedWriter(new FileWriter("/media/kasia/20E03D5DE03D3A7C/studia/proz/DBEngine/results.txt"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         Iterator<Map.Entry<MsMsQuery, HashSet<Peptide>>> it = mapOfMsMsQueryAndTheirPeptideCandidatesList.entrySet().iterator();
         while (it.hasNext()){
             Map.Entry<MsMsQuery, HashSet<Peptide>> query = it.next();
@@ -55,11 +65,26 @@ public class ScoringModule
             HashSet<Peptide> peptideList = query.getValue();
 
             Peptide maxValueInMap2 = peptideList.stream().max(Comparator.comparing(Peptide::getScore)).get();
-            logger.info("kandydatów: " + peptideList.size()+";" +" dla: "+";" +query.getKey().toString()+";"+query.getKey().getMass()+
-                    ";"+maxValueInMap2.getSequence() +";" +maxValueInMap2.getProteinIds() +";"+
-                    maxValueInMap2 +";"+maxValueInMap2.getMass());
+            try {
+                writeLine(writer,"kandydatów: " + peptideList.size()+";" +" dla: "+";" +query.getKey().toString()+";"+query.getKey().getMass()+
+                        ";"+maxValueInMap2.getSequence() +";" +maxValueInMap2.getProteinIds() +";"+
+                        maxValueInMap2 +";"+maxValueInMap2.getMass());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
         }
+        try {
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void writeLine(BufferedWriter writer,String line) throws IOException
+    {
+        writer.write(line);
+        writer.newLine();
     }
 
     public static <T, E> Set<Peptide> getKeysByValue(Map<Peptide, Double> map, double value) {

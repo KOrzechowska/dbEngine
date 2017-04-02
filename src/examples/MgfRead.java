@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.google.common.collect.Range;
 import com.google.common.collect.TreeRangeSet;
-import mscanlib.*;
+import mscanlib.common.MScanException;
 import mscanlib.ms.mass.*;
 import mscanlib.ms.msms.*;
 import mscanlib.ms.msms.dbengines.mascot.io.*;
